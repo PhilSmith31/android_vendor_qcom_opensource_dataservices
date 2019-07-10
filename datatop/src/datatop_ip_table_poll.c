@@ -125,6 +125,7 @@ int dtop_ip_table_poll(struct dtop_data_point_gatherer *dpg)
 static void dtop_ip_table_dpg_deconstructor
 			(struct dtop_data_point_gatherer *dpset)
 {
+	int i;
 	free(dpset->prefix);
   if(dpset->file)
   {
@@ -178,6 +179,9 @@ int dtop_ip_table_init_files()
  */
 void dtop_ip_table_poll_cleanup()
 {
+  struct dtop_data_point_gatherer *dpset;
+  struct dtop_linked_list *curr_ptr = ip_dpg_list;
+
   pthread_mutex_lock(&dtop_ip_table_lock);
   deconstruct_dpgs(ip_dpg_list);
   dtop_rem_linked_list(ip_dpg_list);
@@ -189,7 +193,7 @@ void dtop_ip_table_poll_cleanup()
  *
  * @param arg ptr
  */
-void *dtop_ip_table_start_poll(__attribute__((__unused__)) void *arg)
+void *dtop_ip_table_start_poll(void *arg)
 {
   time_t start_t, curr_t;
   double diff_t = 9999999.00; /* some high # > DTOP_IPTRR_POLL_PERIOD */
